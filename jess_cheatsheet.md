@@ -1,4 +1,29 @@
-Here’s a concise **Jess Syntax Cheatsheet** in table format:
+# Jess is pre-order 
+         +
+        / \
+       3   *
+          / \
+         2   6
+
+pre-order : + 3 * 2 6  
+ in-order : 3 + (2 * 6)
+
+
+# Basic data types in Jess 
+
+| Jess Type              | Possible Java Types                     |
+|------------------------|-----------------------------------------|
+| RU.EXTERNAL_ADDRESS    | The wrapped object                      |
+| nil                    | A null reference                        |
+| TRUE or FALSE          | `String`, `java.lang.Boolean`, or `boolean` |
+| RU.ATOM (a symbol), RU.STRING | `String`, `char`, or `java.lang.Character` |
+| RU.FLOAT               | `float`, `double`, and their wrappers   |
+| RU.INTEGER             | `long`, `short`, `int`, `byte`, `char`, and their wrappers |
+| RU.LONG                | `long`, `short`, `int`, `byte`, `char`, and their wrappers |
+| RU.LIST                | A Java array                            |
+
+
+
 
 | **Concept**            | **Syntax/Command**                                                                                      | **Description**                                                                                                                                             | **Example**                                                                                                                                  |
 |-------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -22,4 +47,12 @@ Here’s a concise **Jess Syntax Cheatsheet** in table format:
 
 ---
 
-This cheatsheet is designed to help you quickly recall syntax and functionality in Jess. Let me know if you'd like additional customizations or expansions!
+# if VS test
+
+| **Aspect**         | **`test`**                                         | **`if`**                                           |
+|---------------------|---------------------------------------------------|---------------------------------------------------|
+| **Location**        | Used on LHS of rules.                             | Used on RHS of rules or in functions.            |
+| **Functionality**   | Filters rule activation based on conditions.      | Executes actions based on conditions.            |
+| **Output**          | Does not execute actions; only evaluates.         | Executes specific actions for `then`/`else`.     |
+| **Syntax Context**  | `(test <boolean-expression>)`                     | `(if <condition> then <action> [else <action>])` |
+| **When to Use**     |When you need to limit rule activation based on custom logic or computed values.| When you need to perform different actions in the RHS or functions depending on conditions|
