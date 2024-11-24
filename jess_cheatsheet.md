@@ -24,7 +24,7 @@ pre-order : + 3 * 2 6
 
 
 
-
+# JESS Syntax
 | **Concept**            | **Syntax/Command**                                                                                      | **Description**                                                                                                                                             | **Example**                                                                                                                                  |
 |-------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | **Create List**         | `(bind <variable> (create$ <item1> <item2> ...))`                                                      | Creates a plain list.                                                                                                                                       | `(bind ?grocery-list (create$ egg bread milk))`                                                                                              |
@@ -45,9 +45,9 @@ pre-order : + 3 * 2 6
 | **Rule Definition**     | `(defrule <name> <LHS conditions> => <RHS actions>)`                                                  | Creates a rule with conditions and actions.                                                                                                                 | `(defrule example (car (brand ?b)) => (printout t ?b crlf))`                                                                                 |
 | **Watch Diagnostics**   | `(watch <event>)`                                                                                     | Enables diagnostics for specific events.                                                                                                                    | `(watch facts)`                                                                                                                              |
 
----
 
-# if VS test
+
+### if VS test
 
 | **Aspect**         | **`test`**                                         | **`if`**                                           |
 |---------------------|---------------------------------------------------|---------------------------------------------------|
@@ -56,3 +56,59 @@ pre-order : + 3 * 2 6
 | **Output**          | Does not execute actions; only evaluates.         | Executes specific actions for `then`/`else`.     |
 | **Syntax Context**  | `(test <boolean-expression>)`                     | `(if <condition> then <action> [else <action>])` |
 | **When to Use**     |When you need to limit rule activation based on custom logic or computed values.| When you need to perform different actions in the RHS or functions depending on conditions|
+
+
+# Five Primary LHS Conditions
+CE := Conditional Element 
+
+| **LHS Condition Type** | **Description**                                                                                      | **Complete Example**                                                                                                      |
+|------------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| **Pattern CE**         | Matches facts in the working memory based on specific patterns.                                     | **Rule:** Checks if a person is an adult by age. <br> **Jess:** `(defrule is-adult (person (age ?a&:(> ?a 20))) => (printout t "This person is an adult." crlf))`                   |
+| **Test CE**            | Evaluates arbitrary expressions that do not directly involve fact pattern matching.                | **Rule:** Adds a bonus to a salary and checks if the total is greater than 100. <br> **Jess:** `(defrule example (person (salary ?salary)) (test (> (+ ?salary 5000) 100)) => (printout t "Salary plus bonus is greater than 100." crlf))` |
+| **OR CE**              | Logical disjunction between multiple conditions; rule fires if any condition is true.              | **Rule:** Triggers if a person is either "John" or over 30 years old. <br> **Jess:** `(defrule check-person (or (person (name "John")) (person (age ?age&:(> ?age 30)))) => (printout t "The person is either John or over 30." crlf))` |
+| **AND CE**             | Combines multiple conditions that must all be true for the rule to fire.                           | **Rule:** Activates if a person named "Alice" is also an employee. <br> **Jess:** `(defrule employee-alice (and (person (name "Alice")) (employee (name "Alice"))) => (printout t "Alice is an employee." crlf))`                   |
+| **NOT CE**             | Specifies that a rule should fire only if a certain pattern does not exist in the working memory.  | **Rule:** Fires if there is no person named "Bob" in the working memory. <br> **Jess:** `(defrule no-bob (not (person (name "Bob"))) => (printout t "There is no person named Bob." crlf))`                                     |
+
+# inference engine types 
+Here's the updated table without the example column, focusing on the approach, process description, and typical use of forward and backward chaining in Jess:
+
+| **Chaining Type** | **Approach**   | **Process Description**                                                                                             | **Typical Use**                                                                                                                                                              |
+|-------------------|----------------|---------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Forward Chaining** | Data-driven    | Starts with known facts and applies rules to infer new facts iteratively until no more rules apply or a goal is reached. | Ideal for scenarios where all possible conclusions need to be explored as data is added or updated, often used in real-time decision-making systems.                          |
+| **Backward Chaining** | Goal-driven    | Begins with a hypothesis or goal and works backwards to find supporting facts or conditions.                           | Useful for verifying specific hypotheses against available data, simulated in Jess through carefully crafted rules that seek specific goals.                                 |
+In rule-based systems like Jess (Java Expert System Shell), two principal reasoning strategies can be implemented: **forward chaining** and **backward chaining**. Both are methods for deducing conclusions from a set of facts and rules, but they operate in fundamentally different ways.
+
+### Forward Chaining
+
+**Example:**
+1. **Initial Facts:** You start with facts about the weather:
+   ```jess
+   (assert (weather sunny))
+   (assert (temperature high))
+   ```
+2. **Rules:** You have a rule that suggests activities based on the weather:
+   ```jess
+   (defrule suggest-activity
+     (weather sunny)
+     (temperature high)
+     =>
+     (assert (activity "Go to the beach")))
+   ```
+3. **Execution:** Given the initial facts, the `suggest-activity` rule would be triggered, leading to the assertion of a new fact `(activity "Go to the beach")`.
+
+
+### Backward Chaining
+
+**Example:**
+1. **Goal:** You want to determine if going hiking is advisable.
+2. **Rules:** You might have rules that establish when hiking is advisable based on weather conditions:
+   ```jess
+   (defrule hiking-advisable
+     ?f <- (goal (activity hiking))
+     (weather sunny)
+     (not (weather-condition severe))
+     =>
+     (retract ?f)
+     (assert (activity-advisable hiking)))
+   ```
+3. **Execution:** When a query is made if hiking is advisable, Jess checks if the conditions for `hiking-advisable` are met by looking for facts that match the rule's prerequisites.
