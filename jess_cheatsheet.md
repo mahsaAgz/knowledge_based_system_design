@@ -112,3 +112,34 @@ In rule-based systems like Jess (Java Expert System Shell), two principal reason
      (assert (activity-advisable hiking)))
    ```
 3. **Execution:** When a query is made if hiking is advisable, Jess checks if the conditions for `hiking-advisable` are met by looking for facts that match the rule's prerequisites.
+
+
+Here’s a concise table summarizing the potentially new or more detailed aspects covered in the "Jess Syntax (II)" document:
+
+| **Concept**             | **Description**                                                                                                             | **Significance**                                                                                         |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| **Salience in Rules**   | Explanation of the `salience` attribute to control the priority of rule firing.                                             | Allows fine-tuning of rule execution order based on priority, enhancing control over rule processing.    |
+| **Conditional Elements**| Detailed discussion on various types of Conditional Elements like `assigned-pattern-CE`, `not-CE`, `and-CE`, `or-CE`, and `test-CE`. | Enables construction of complex rule conditions for more nuanced decision-making processes.              |
+| **Function Definition** | Definition and usage of functions within Jess, such as calculating distances.                                               | Demonstrates how to embed computations and custom logic within Jess rules.                               |
+| **Fact Address Binding**| Details on binding a fact-address to a variable for modifying or retracting it on the RHS.                                   | Important for dynamically altering facts during rule execution, crucial for adaptive systems.            |
+| **Using defquery**      | Usage of `defquery` for direct querying of the working memory without triggering actions.                                    | Provides a mechanism for data retrieval based on conditions, useful for non-disruptive data queries.    |
+| **Practical Examples**  | Advanced examples of modifying attributes and querying working memory for practical applications.                           | Illustrates real-world applications of Jess, enhancing understanding of its capabilities in data handling.|
+
+
+### `defquery` Example 1: Finding People by Age Range
+Suppose you have a database of `person` facts with attributes like name, age, and city. You can use `defquery` to find all persons within a certain age range:
+
+```jess
+(defquery find-people-by-age-range
+  "Finds all people within a specific age range"
+  (declare (variables ?min-age ?max-age))
+  (person (age ?age&:(and (>= ?age ?min-age) (<= ?age ?max-age)))))
+```
+
+**Usage:**
+```jess
+(bind ?results (run-query find-people-by-age-range 20 30))
+(while (?results hasNext)
+  (bind ?fact (call ?results next))
+  (printout t (fact-slot-value ?fact name) crlf))
+```
